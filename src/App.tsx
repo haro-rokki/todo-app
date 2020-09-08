@@ -1,24 +1,29 @@
-import React from 'react'
-import logo from './logo.svg'
+import React, { useState } from 'react'
 import './App.css'
+import { Task } from './components/Types'
+import TaskInput from 'components/TaskInput'
+import TaskList from 'components/TaskList'
 
-function App() {
+const initialState: Task[] = [
+  {
+    id: 2,
+    title: '次にやるやつ',
+    done: false,
+  },
+  {
+    id: 1,
+    title: '最初にやるやつ',
+    done: false,
+  },
+]
+
+const App: React.FC = () => {
+  const [tasks, setTasks] = useState(initialState)
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <TaskInput setTasks={setTasks} tasks={tasks} />
+      <TaskList setTasks={setTasks} tasks={tasks} />
     </div>
   )
 }
