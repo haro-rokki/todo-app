@@ -1,6 +1,7 @@
 import React from 'react'
 import TaskItem from './TaskItem'
 import { Task } from './Types'
+import { List } from 'semantic-ui-react'
 
 type Props = {
   tasks: Task[]
@@ -23,16 +24,18 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
-        <ul className="task-list">
+        <List>
           {tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              handleDelete={handleDelete}
-              handleDone={handleDone}
-            />
+            <List.Item>
+              <TaskItem
+                key={task.id}
+                task={task}
+                handleDelete={handleDelete}
+                handleDone={handleDone}
+              />
+            </List.Item>
           ))}
-        </ul>
+        </List>
       )}
     </div>
   )

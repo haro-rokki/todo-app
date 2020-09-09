@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Task } from './Types'
+import { Button, Input } from 'semantic-ui-react'
 
 type Props = {
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
@@ -31,15 +32,19 @@ const TaskInput: React.FC<Props> = ({ setTasks, tasks }) => {
     <div>
       <div className="inputForm">
         <div className="inner">
-          <input
+          <Input
             type="text"
             className="input"
             value={inputTitle}
             onChange={handleInputChange}
           />
-          <button onClick={handleSubmit} className="btn is-primary">
+          <Button
+            primary={true}
+            onClick={handleSubmit}
+            className="btn is-primary"
+          >
             追加
-          </button>
+          </Button>
         </div>
       </div>
     </div>
