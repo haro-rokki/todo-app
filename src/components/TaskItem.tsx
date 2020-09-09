@@ -1,5 +1,6 @@
 import React from 'react'
 import { Task } from './Types'
+import { Button, Checkbox } from 'semantic-ui-react'
 
 type Props = {
   task: Task
@@ -9,19 +10,20 @@ type Props = {
 
 const TaskItem: React.FC<Props> = ({ task, handleDone, handleDelete }) => {
   return (
-    <li className={task.done ? 'done' : ''}>
-      <label>
-        <input
-          type="checkbox"
-          className="checkbox-input"
-          onClick={() => handleDone(task)}
-        />
-        <span className="checkbox-label">{task.title}</span>
-      </label>
-      <button onClick={() => handleDelete(task)} className="btn is-delete">
+    <>
+      <Checkbox
+        label={task.title}
+        className="checkbox-input"
+        onClick={() => handleDone(task)}
+      />
+      <Button
+        negative={true}
+        onClick={() => handleDelete(task)}
+        className="btn is-delete"
+      >
         削除
-      </button>
-    </li>
+      </Button>
+    </>
   )
 }
 

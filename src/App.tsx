@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
+import 'semantic-ui-css/semantic.min.css'
 import { Task } from './components/Types'
 import TaskInput from 'components/TaskInput'
 import TaskList from 'components/TaskList'
