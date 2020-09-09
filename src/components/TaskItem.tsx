@@ -15,6 +15,7 @@ const TaskItem: React.FC<Props> = ({ task, handleDone, handleDelete }) => {
         label={task.title}
         className="checkbox-input"
         onClick={() => handleDone(task)}
+        defaultChecked={task.done}
       />
       <Button
         negative={true}
