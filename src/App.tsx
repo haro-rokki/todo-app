@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const [tasks, setTasks] = useState(initialState)
 
   return (
-    <div>
+    <div className="AppContainer">
       <TaskInput setTasks={setTasks} tasks={tasks} />
       <TaskList setTasks={setTasks} tasks={tasks} />
     </div>
