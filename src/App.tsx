@@ -1,25 +1,30 @@
 import React, { useState } from 'react'
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
-import { Task } from './components/Types'
 import TaskInput from 'components/TaskInput'
 import TaskList from 'components/TaskList'
+import gql from 'graphql-tag'
+import { useQuery } from 'react-apollo-hooks'
 
-const initialState: Task[] = [
-  {
-    id: 2,
-    title: '次にやるやつ',
-    done: false,
-  },
-  {
-    id: 1,
-    title: '最初にやるやつ',
-    done: false,
-  },
-]
+export const GET_TODOS = gql`
+  query {
+    allTodos {
+      id
+      title
+      done
+    }
+  }
+`
 
 const App: React.FC = () => {
-  const [tasks, setTasks] = useState(initialState)
+  const { data, error, loading } = useQuery(GET_TODOS)
+  const [tasks, setTasks] = useState(data)
+  if (loading) {
+    return <div>Loading...</div>
+  }
+  if (error) {
+    return <div>`Error! ${error.message}`</div>
+  }
 
   return (
     <div className="AppContainer">
