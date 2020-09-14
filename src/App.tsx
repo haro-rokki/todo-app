@@ -1,31 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
-import { Task } from './components/Types'
 import TaskInput from 'components/TaskInput'
 import TaskList from 'components/TaskList'
+import gql from 'graphql-tag'
+import { BrowserRouter } from 'react-router-dom'
+import { useQuery } from 'react-apollo'
+import { Task } from './components/Types'
 
-const initialState: Task[] = [
-  {
-    id: 2,
-    title: '次にやるやつ',
-    done: false,
-  },
-  {
-    id: 1,
-    title: '最初にやるやつ',
-    done: false,
-  },
-]
+export const ROOT_QUERY = gql`
+  query {
+    allTodos {
+      id
+      title
+      done
+    }
+  }
+`
+
+interface TaskData {
+  allTodos: Task[]
+}
 
 const App: React.FC = () => {
-  const [tasks, setTasks] = useState(initialState)
+  const { data, loading } = useQuery<TaskData>(ROOT_QUERY)
+  const [tasks, setTasks] = useState<Task[]>(data ? data.allTodos : [])
+
+  useEffect(() => {
+    if (loading === false && data) {
+      setTasks(data.allTodos)
+    }
+  }, [loading, data])
 
   return (
-    <div className="AppContainer">
-      <TaskInput setTasks={setTasks} tasks={tasks} />
-      <TaskList setTasks={setTasks} tasks={tasks} />
-    </div>
+    <BrowserRouter>
+      {loading ? (
+        <p>Loading ...</p>
+      ) : (
+        <div className="AppContainer">
+          <TaskInput setTasks={setTasks} tasks={tasks} />
+          <TaskList setTasks={setTasks} tasks={tasks} />
+        </div>
+      )}
+    </BrowserRouter>
   )
 }
 

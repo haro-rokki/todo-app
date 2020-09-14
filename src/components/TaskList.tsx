@@ -26,7 +26,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       ) : (
         <List>
           {tasks.map((task) => (
-            <List.Item>
+            <List.Item key={task.id}>
               <TaskItem
                 key={task.id}
                 task={task}
