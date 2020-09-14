@@ -20,6 +20,16 @@ const DELETE_TODO = gql`
   }
 `
 
+const DONE_TODO = gql`
+  mutation DoneTodo($id: ID!) {
+    doneTodo(id: $id) {
+      id
+      title
+      done
+    }
+  }
+`
+
 const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
   const [deleteTodo, { data }] = useMutation<
@@ -29,7 +39,17 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
     variables: { id: todoId },
   })
 
-  const handleDone = (task: Task) => {
+  const [doneTodo, { data: dataDone }] = useMutation<
+    { doneTodo: Task },
+    { id: String }
+  >(DONE_TODO, {
+    variables: { id: todoId },
+  })
+
+  const handleDone = async (task: Task) => {
+    await setTodoId(task.id)
+    await doneTodo()
+    await setTodoId('')
     setTasks((prev) =>
       prev.map((t) => (t.id === task.id ? { ...task, done: !task.done } : t)),
     )
@@ -38,12 +58,13 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const handleDelete = async (task: Task) => {
     await setTodoId(task.id)
     await deleteTodo()
-    setTodoId('')
+    await setTodoId('')
     setTasks((prev) => prev.filter((t) => t.id !== task.id))
   }
 
   return (
     <div className="inner">
+      {dataDone && dataDone.doneTodo ? <p>Done!</p> : null}
       {data && data.deleteTodo ? <p>Deleted!</p> : null}
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
