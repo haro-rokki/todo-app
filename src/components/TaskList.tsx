@@ -11,7 +11,7 @@ type Props = {
 }
 
 const DELETE_TODO = gql`
-  mutation DeleteTodo($id: ID!) {
+  mutation deleteTodo($id: ID!) {
     deleteTodo(id: $id) {
       id
       title
@@ -21,7 +21,7 @@ const DELETE_TODO = gql`
 `
 
 const DONE_TODO = gql`
-  mutation DoneTodo($id: ID!) {
+  mutation doneTodo($id: ID!) {
     doneTodo(id: $id) {
       id
       title
@@ -50,8 +50,8 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
     await setTodoId(task.id)
     await doneTodo()
     await setTodoId('')
-    setTasks((prev) =>
-      prev.map((t) => (t.id === task.id ? { ...task, done: !task.done } : t)),
+    setTasks(() =>
+      tasks.map((t) => (t.id === task.id ? { ...task, done: !task.done } : t)),
     )
   }
 
@@ -59,7 +59,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
     await setTodoId(task.id)
     await deleteTodo()
     await setTodoId('')
-    setTasks((prev) => prev.filter((t) => t.id !== task.id))
+    setTasks(() => tasks.filter((t) => t.id !== task.id))
   }
 
   return (
