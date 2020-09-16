@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef, FC } from 'react'
+import { useDrag, useDrop } from 'react-dnd'
 import TaskItem from './TaskItem'
 import { Task } from './Types'
-import { List } from 'semantic-ui-react'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
 
@@ -30,6 +30,54 @@ const DONE_TODO = gql`
   }
 `
 
+interface SortableListProps {
+  index: number
+  task: Task
+  swapList: (sourceIndex: number, targetIndex: number) => void
+  handleDone: (task: Task) => void
+  handleDelete: (task: Task) => void
+}
+
+interface DragItem {
+  type: string
+  index: number
+}
+
+const DND_GROUP = 'list'
+
+const SortableList: FC<SortableListProps> = ({
+  index,
+  task,
+  swapList,
+  handleDone,
+  handleDelete,
+}) => {
+  const ref = useRef<HTMLLIElement>(null)
+  const [, drop] = useDrop({
+    accept: DND_GROUP,
+    drop(item: DragItem) {
+      if (!ref.current || item.index === index) {
+        return
+      }
+      swapList(item.index, index)
+    },
+  })
+  const [, drag] = useDrag({
+    item: { type: DND_GROUP, index },
+  })
+  drag(drop(ref))
+
+  return (
+    <li ref={ref}>
+      <TaskItem
+        task={task}
+        handleDelete={handleDelete}
+        handleDone={handleDone}
+      />
+    </li>
+  )
+}
+
 const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
   const [deleteTodo, { data }] = useMutation<
@@ -38,13 +86,22 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   >(DELETE_TODO, {
     variables: { id: todoId },
   })
-
   const [doneTodo, { data: dataDone }] = useMutation<
     { doneTodo: Task },
     { id: String }
   >(DONE_TODO, {
     variables: { id: todoId },
   })
+  const swapList = useCallback(
+    (sourceIndex: number, targetIndex: number) => {
+      ;[tasks[targetIndex], tasks[sourceIndex]] = [
+        tasks[sourceIndex],
+        tasks[targetIndex],
+      ]
+      setTasks(tasks.splice(0))
+    },
+    [tasks],
+  )
 
   const handleDone = async (task: Task) => {
     await setTodoId(task.id)
@@ -69,18 +126,18 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
-        <List>
-          {tasks.map((task) => (
-            <List.Item key={task.id}>
-              <TaskItem
-                key={task.id}
-                task={task}
-                handleDelete={handleDelete}
-                handleDone={handleDone}
-              />
-            </List.Item>
+        <ul>
+          {tasks.map((task, index) => (
+            <SortableList
+              key={index}
+              index={index}
+              task={task}
+              swapList={swapList}
+              handleDone={handleDone}
+              handleDelete={handleDelete}
+            />
           ))}
-        </List>
+        </ul>
       )}
     </div>
   )

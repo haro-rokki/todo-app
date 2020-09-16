@@ -7,6 +7,8 @@ import gql from 'graphql-tag'
 import { BrowserRouter } from 'react-router-dom'
 import { useQuery } from 'react-apollo'
 import { Task } from './components/Types'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 export const ROOT_QUERY = gql`
   query {
@@ -39,7 +41,9 @@ const App: React.FC = () => {
       ) : (
         <div className="AppContainer">
           <TaskInput setTasks={setTasks} tasks={tasks} />
-          <TaskList setTasks={setTasks} tasks={tasks} />
+          <DndProvider backend={HTML5Backend}>
+            <TaskList setTasks={setTasks} tasks={tasks} />
+          </DndProvider>
         </div>
       )}
     </BrowserRouter>
