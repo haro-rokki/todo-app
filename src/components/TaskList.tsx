@@ -80,13 +80,13 @@ const SortableList: FC<SortableListProps> = ({
 
   return (
     <Ref innerRef={ref}>
-      <List>
+      <List.Item>
         <TaskItem
           task={task}
           handleDelete={handleDelete}
           handleDone={handleDone}
         />
-      </List>
+      </List.Item>
     </Ref>
   )
 }
@@ -152,7 +152,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
-        <ul>
+        <List>
           {tasks.map((task, index) => (
             <SortableList
               key={index}
@@ -163,7 +163,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
               handleDelete={handleDelete}
             />
           ))}
-        </ul>
+        </List>
       )}
     </div>
   )
