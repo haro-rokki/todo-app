@@ -31,6 +31,16 @@ const DONE_TODO = gql`
   }
 `
 
+const SORT_TODO = gql`
+  mutation sortTodo($sourceId: ID!, $targetId: ID!) {
+    sortTodo(sourceId: $sourceId, targetId: $targetId) {
+      id
+      title
+      done
+    }
+  }
+`
+
 interface SortableListProps {
   index: number
   task: Task
@@ -83,6 +93,8 @@ const SortableList: FC<SortableListProps> = ({
 
 const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
+  const [sourceId, setSourceId] = useState<string>('')
+  const [targetId, setTargetId] = useState<string>('')
   const [deleteTodo, { data }] = useMutation<
     { deleteTodo: Task },
     { id: String }
@@ -95,13 +107,23 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   >(DONE_TODO, {
     variables: { id: todoId },
   })
+  const [sortTodo, { data: dataSort }] = useMutation<
+    { sortTodo: Task[] },
+    { sourceId: String; targetId: String }
+  >(SORT_TODO, {
+    variables: { sourceId: sourceId, targetId: targetId },
+  })
+
   const swapList = useCallback(
     (sourceIndex: number, targetIndex: number) => {
       ;[tasks[targetIndex], tasks[sourceIndex]] = [
         tasks[sourceIndex],
         tasks[targetIndex],
       ]
+      setSourceId(tasks[sourceIndex].id)
+      setTargetId(tasks[targetIndex].id)
       setTasks(tasks.splice(0))
+      sortTodo()
     },
     [tasks],
   )
@@ -126,6 +148,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
     <div className="inner">
       {dataDone && dataDone.doneTodo ? <p>Done!</p> : null}
       {data && data.deleteTodo ? <p>Deleted!</p> : null}
+      {dataSort ? <p>Sorted!</p> : null}
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
