@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useRef, FC } from 'react'
+import { useDrag, useDrop } from 'react-dnd'
 import TaskItem from './TaskItem'
 import { Task } from './Types'
-import { List } from 'semantic-ui-react'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
+import { List, Ref } from 'semantic-ui-react'
 
 type Props = {
   tasks: Task[]
@@ -30,21 +31,102 @@ const DONE_TODO = gql`
   }
 `
 
+const SORT_TODO = gql`
+  mutation sortTodo($sourceId: ID!, $targetId: ID!) {
+    sortTodo(sourceId: $sourceId, targetId: $targetId) {
+      id
+      title
+      done
+    }
+  }
+`
+
+interface SortableListProps {
+  index: number
+  task: Task
+  swapList: (sourceIndex: number, targetIndex: number) => void
+  handleDone: (task: Task) => void
+  handleDelete: (task: Task) => void
+}
+
+interface DragItem {
+  type: string
+  index: number
+}
+
+const DND_GROUP = 'list'
+
+const SortableList: FC<SortableListProps> = ({
+  index,
+  task,
+  swapList,
+  handleDone,
+  handleDelete,
+}) => {
+  const ref = useRef(null)
+  const [, drop] = useDrop({
+    accept: DND_GROUP,
+    drop(item: DragItem) {
+      if (!ref.current || item.index === index) {
+        return
+      }
+      swapList(item.index, index)
+    },
+  })
+  const [, drag] = useDrag({
+    item: { type: DND_GROUP, index },
+  })
+  drag(drop(ref))
+
+  return (
+    <Ref innerRef={ref}>
+      <List.Item>
+        <TaskItem
+          task={task}
+          handleDelete={handleDelete}
+          handleDone={handleDone}
+        />
+      </List.Item>
+    </Ref>
+  )
+}
+
 const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
+  const [sourceId, setSourceId] = useState<string>('')
+  const [targetId, setTargetId] = useState<string>('')
   const [deleteTodo, { data }] = useMutation<
     { deleteTodo: Task },
     { id: String }
   >(DELETE_TODO, {
     variables: { id: todoId },
   })
-
   const [doneTodo, { data: dataDone }] = useMutation<
     { doneTodo: Task },
     { id: String }
   >(DONE_TODO, {
     variables: { id: todoId },
   })
+  const [sortTodo, { data: dataSort }] = useMutation<
+    { sortTodo: Task[] },
+    { sourceId: String; targetId: String }
+  >(SORT_TODO, {
+    variables: { sourceId: sourceId, targetId: targetId },
+  })
+
+  const swapList = useCallback(
+    (sourceIndex: number, targetIndex: number) => {
+      ;[tasks[targetIndex], tasks[sourceIndex]] = [
+        tasks[sourceIndex],
+        tasks[targetIndex],
+      ]
+      setSourceId(tasks[sourceIndex].id)
+      setTargetId(tasks[targetIndex].id)
+      setTasks(tasks.splice(0))
+      sortTodo()
+    },
+    [tasks],
+  )
 
   const handleDone = async (task: Task) => {
     await setTodoId(task.id)
@@ -66,19 +148,20 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
     <div className="inner">
       {dataDone && dataDone.doneTodo ? <p>Done!</p> : null}
       {data && data.deleteTodo ? <p>Deleted!</p> : null}
+      {dataSort ? <p>Sorted!</p> : null}
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
         <List>
-          {tasks.map((task) => (
-            <List.Item key={task.id}>
-              <TaskItem
-                key={task.id}
-                task={task}
-                handleDelete={handleDelete}
-                handleDone={handleDone}
-              />
-            </List.Item>
+          {tasks.map((task, index) => (
+            <SortableList
+              key={index}
+              index={index}
+              task={task}
+              swapList={swapList}
+              handleDone={handleDone}
+              handleDelete={handleDelete}
+            />
           ))}
         </List>
       )}
