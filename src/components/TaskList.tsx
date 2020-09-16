@@ -4,6 +4,7 @@ import TaskItem from './TaskItem'
 import { Task } from './Types'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
+import { List, Ref } from 'semantic-ui-react'
 
 type Props = {
   tasks: Task[]
@@ -52,7 +53,7 @@ const SortableList: FC<SortableListProps> = ({
   handleDone,
   handleDelete,
 }) => {
-  const ref = useRef<HTMLLIElement>(null)
+  const ref = useRef(null)
   const [, drop] = useDrop({
     accept: DND_GROUP,
     drop(item: DragItem) {
@@ -68,13 +69,15 @@ const SortableList: FC<SortableListProps> = ({
   drag(drop(ref))
 
   return (
-    <li ref={ref}>
-      <TaskItem
-        task={task}
-        handleDelete={handleDelete}
-        handleDone={handleDone}
-      />
-    </li>
+    <Ref innerRef={ref}>
+      <List ref={ref}>
+        <TaskItem
+          task={task}
+          handleDelete={handleDelete}
+          handleDone={handleDone}
+        />
+      </List>
+    </Ref>
   )
 }
 
