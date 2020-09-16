@@ -70,7 +70,7 @@ const SortableList: FC<SortableListProps> = ({
 
   return (
     <Ref innerRef={ref}>
-      <List ref={ref}>
+      <List>
         <TaskItem
           task={task}
           handleDelete={handleDelete}
