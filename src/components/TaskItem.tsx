@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core'
 import React from 'react'
 import { Task } from './Types'
 import { Button, Checkbox } from 'semantic-ui-react'
@@ -10,7 +12,7 @@ type Props = {
 
 const TaskItem: React.FC<Props> = ({ task, handleDone, handleDelete }) => {
   return (
-    <>
+    <div>
       <Checkbox
         label={task.title}
         className="checkbox-input"
@@ -24,7 +26,7 @@ const TaskItem: React.FC<Props> = ({ task, handleDone, handleDelete }) => {
       >
         削除
       </Button>
-    </>
+    </div>
   )
 }
 

@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core'
 import React, { useState, useCallback, useRef, FC } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import TaskItem from './TaskItem'
