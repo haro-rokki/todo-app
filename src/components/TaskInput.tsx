@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core'
+import { css, jsx } from '@emotion/core'
 import React, { useState } from 'react'
 import { Task } from './Types'
 import { Button, Input } from 'semantic-ui-react'
@@ -10,6 +10,16 @@ type Props = {
   setTasks: React.Dispatch<React.SetStateAction<Task[]>>
   tasks: Task[]
 }
+
+const inputDesign = css`
+  .inner {
+    padding: 1em;
+  }
+  .primary-btn {
+    padding: 1em;
+    margin-left: 1em;
+  }
+`
 
 const ADD_TODO = gql`
   mutation AddTodo($title: String!) {
@@ -49,9 +59,9 @@ const TaskInput: React.FC<Props> = ({ setTasks, tasks }) => {
   }
 
   return (
-    <div>
+    <div css={inputDesign}>
       {data && data.addTodo ? <p>Saved!</p> : null}
-      <div className="inputForm">
+      <div className="input-form">
         <div className="inner">
           <Input
             type="text"
@@ -59,11 +69,7 @@ const TaskInput: React.FC<Props> = ({ setTasks, tasks }) => {
             value={inputTitle}
             onChange={handleInputChange}
           />
-          <Button
-            primary={true}
-            onClick={handleSubmit}
-            className="btn is-primary"
-          >
+          <Button primary={true} onClick={handleSubmit} className="primary-btn">
             追加
           </Button>
         </div>
