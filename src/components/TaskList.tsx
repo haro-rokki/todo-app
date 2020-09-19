@@ -6,7 +6,7 @@ import TaskItem from './TaskItem'
 import { Task } from './Types'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
-import { List, Ref } from 'semantic-ui-react'
+import { List, Ref, Message } from 'semantic-ui-react'
 
 type Props = {
   tasks: Task[]
@@ -156,7 +156,9 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   return (
     <div className="inner">
       {tasks.length <= 0 ? (
-        '登録されたTODOはありません'
+        <Message>
+          <p>登録されたTODOはありません</p>
+        </Message>
       ) : (
         <List css={listDesign} divided={true} verticalAlign="middle">
           {tasks.map((task, index) => (
