@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from '@emotion/core'
+import { css, jsx } from '@emotion/core'
 import React, { useState, useCallback, useRef, FC } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import TaskItem from './TaskItem'
@@ -58,6 +58,13 @@ interface DragItem {
 
 const DND_GROUP = 'list'
 
+const listDesign = css`
+  .task:hover {
+    border-bottom: solid;
+    border-color: #a9a9a9;
+  }
+`
+
 const SortableList: FC<SortableListProps> = ({
   index,
   task,
@@ -82,7 +89,7 @@ const SortableList: FC<SortableListProps> = ({
 
   return (
     <Ref innerRef={ref}>
-      <List.Item>
+      <List.Item className="task">
         <TaskItem
           task={task}
           handleDelete={handleDelete}
@@ -151,7 +158,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
-        <List divided verticalAlign="middle">
+        <List css={listDesign} divided={true} verticalAlign="middle">
           {tasks.map((task, index) => (
             <SortableList
               key={index}
