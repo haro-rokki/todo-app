@@ -1,10 +1,12 @@
+/** @jsx jsx */
+import { css, jsx } from '@emotion/core'
 import React, { useState, useCallback, useRef, FC } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import TaskItem from './TaskItem'
 import { Task } from './Types'
 import gql from 'graphql-tag'
 import { useMutation } from 'react-apollo'
-import { List, Ref } from 'semantic-ui-react'
+import { List, Ref, Message } from 'semantic-ui-react'
 
 type Props = {
   tasks: Task[]
@@ -56,6 +58,13 @@ interface DragItem {
 
 const DND_GROUP = 'list'
 
+const listDesign = css`
+  .task:hover {
+    border-bottom: solid;
+    border-color: #a9a9a9;
+  }
+`
+
 const SortableList: FC<SortableListProps> = ({
   index,
   task,
@@ -80,7 +89,7 @@ const SortableList: FC<SortableListProps> = ({
 
   return (
     <Ref innerRef={ref}>
-      <List.Item>
+      <List.Item className="task">
         <TaskItem
           task={task}
           handleDelete={handleDelete}
@@ -95,19 +104,19 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
   const [sourceId, setSourceId] = useState<string>('')
   const [targetId, setTargetId] = useState<string>('')
-  const [deleteTodo, { data }] = useMutation<
-    { deleteTodo: Task },
-    { id: String }
-  >(DELETE_TODO, {
-    variables: { id: todoId },
-  })
-  const [doneTodo, { data: dataDone }] = useMutation<
-    { doneTodo: Task },
-    { id: String }
-  >(DONE_TODO, {
-    variables: { id: todoId },
-  })
-  const [sortTodo, { data: dataSort }] = useMutation<
+  const [deleteTodo] = useMutation<{ deleteTodo: Task }, { id: String }>(
+    DELETE_TODO,
+    {
+      variables: { id: todoId },
+    },
+  )
+  const [doneTodo] = useMutation<{ doneTodo: Task }, { id: String }>(
+    DONE_TODO,
+    {
+      variables: { id: todoId },
+    },
+  )
+  const [sortTodo] = useMutation<
     { sortTodo: Task[] },
     { sourceId: String; targetId: String }
   >(SORT_TODO, {
@@ -146,13 +155,12 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
 
   return (
     <div className="inner">
-      {dataDone && dataDone.doneTodo ? <p>Done!</p> : null}
-      {data && data.deleteTodo ? <p>Deleted!</p> : null}
-      {dataSort ? <p>Sorted!</p> : null}
       {tasks.length <= 0 ? (
-        '登録されたTODOはありません'
+        <Message>
+          <p>登録されたTODOはありません</p>
+        </Message>
       ) : (
-        <List>
+        <List css={listDesign} divided={true} verticalAlign="middle">
           {tasks.map((task, index) => (
             <SortableList
               key={index}

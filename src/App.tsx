@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx } from '@emotion/core'
 import React, { useState, useEffect } from 'react'
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
@@ -9,6 +11,7 @@ import { useQuery } from 'react-apollo'
 import { Task } from './components/Types'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
+import { Dimmer, Loader } from 'semantic-ui-react'
 
 export const ROOT_QUERY = gql`
   query {
@@ -36,16 +39,15 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      {loading ? (
-        <p>Loading ...</p>
-      ) : (
-        <div className="AppContainer">
-          <TaskInput setTasks={setTasks} tasks={tasks} />
-          <DndProvider backend={HTML5Backend}>
-            <TaskList setTasks={setTasks} tasks={tasks} />
-          </DndProvider>
-        </div>
-      )}
+      <div className="AppContainer">
+        <Dimmer active={loading}>
+          <Loader />
+        </Dimmer>
+        <TaskInput setTasks={setTasks} tasks={tasks} />
+        <DndProvider backend={HTML5Backend}>
+          <TaskList setTasks={setTasks} tasks={tasks} />
+        </DndProvider>
+      </div>
     </BrowserRouter>
   )
 }
