@@ -97,19 +97,19 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
   const [todoId, setTodoId] = useState<string>('')
   const [sourceId, setSourceId] = useState<string>('')
   const [targetId, setTargetId] = useState<string>('')
-  const [deleteTodo, { data }] = useMutation<
-    { deleteTodo: Task },
-    { id: String }
-  >(DELETE_TODO, {
-    variables: { id: todoId },
-  })
-  const [doneTodo, { data: dataDone }] = useMutation<
-    { doneTodo: Task },
-    { id: String }
-  >(DONE_TODO, {
-    variables: { id: todoId },
-  })
-  const [sortTodo, { data: dataSort }] = useMutation<
+  const [deleteTodo] = useMutation<{ deleteTodo: Task }, { id: String }>(
+    DELETE_TODO,
+    {
+      variables: { id: todoId },
+    },
+  )
+  const [doneTodo] = useMutation<{ doneTodo: Task }, { id: String }>(
+    DONE_TODO,
+    {
+      variables: { id: todoId },
+    },
+  )
+  const [sortTodo] = useMutation<
     { sortTodo: Task[] },
     { sourceId: String; targetId: String }
   >(SORT_TODO, {
@@ -148,9 +148,6 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
 
   return (
     <div className="inner">
-      {dataDone && dataDone.doneTodo ? <p>Done!</p> : null}
-      {data && data.deleteTodo ? <p>Deleted!</p> : null}
-      {dataSort ? <p>Sorted!</p> : null}
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (

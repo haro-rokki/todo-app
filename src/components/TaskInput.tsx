@@ -33,7 +33,7 @@ const ADD_TODO = gql`
 
 const TaskInput: React.FC<Props> = ({ setTasks, tasks }) => {
   const [inputTitle, setInputTitle] = useState<string>('')
-  const [addTodo, { data }] = useMutation<{ addTodo: Task }, { title: String }>(
+  const [addTodo] = useMutation<{ addTodo: Task }, { title: String }>(
     ADD_TODO,
     {
       variables: { title: inputTitle },
@@ -60,7 +60,6 @@ const TaskInput: React.FC<Props> = ({ setTasks, tasks }) => {
 
   return (
     <div css={inputDesign}>
-      {data && data.addTodo ? <p>Saved!</p> : null}
       <div className="input-form">
         <div className="inner">
           <Input
