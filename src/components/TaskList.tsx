@@ -151,7 +151,7 @@ const TaskList: React.FC<Props> = ({ tasks, setTasks }) => {
       {tasks.length <= 0 ? (
         '登録されたTODOはありません'
       ) : (
-        <List>
+        <List divided verticalAlign="middle">
           {tasks.map((task, index) => (
             <SortableList
               key={index}

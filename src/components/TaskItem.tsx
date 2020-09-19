@@ -2,7 +2,7 @@
 import { css, jsx } from '@emotion/core'
 import React from 'react'
 import { Task } from './Types'
-import { Button, Checkbox } from 'semantic-ui-react'
+import { Button, Checkbox, List } from 'semantic-ui-react'
 
 type Props = {
   task: Task
@@ -16,7 +16,6 @@ const theme = css`
   }
   .delete-btn {
     padding: 1em;
-    float: right;
   }
 `
 
@@ -29,13 +28,15 @@ const TaskItem: React.FC<Props> = ({ task, handleDone, handleDelete }) => {
         onClick={() => handleDone(task)}
         checked={task.done}
       />
-      <Button
-        negative={true}
-        onClick={() => handleDelete(task)}
-        className="delete-btn"
-      >
-        削除
-      </Button>
+      <List.Content floated="right">
+        <Button
+          negative={true}
+          onClick={() => handleDelete(task)}
+          className="delete-btn"
+        >
+          削除
+        </Button>
+      </List.Content>
     </div>
   )
 }
